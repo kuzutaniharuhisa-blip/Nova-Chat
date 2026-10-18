@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NovaChat</title>
+<style>
+:root{color-scheme:dark;--bg:#101116;--panel:#191b24;--panel2:#20232e;--line:#303341;--text:#f1f2f8;--muted:#a1a5b5;--accent:#8b7cff;--accent2:#6b5ce7;--danger:#ff6b7d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;height:100vh}
+button,input{font:inherit}button{cursor:pointer;border:0;border-radius:9px;padding:10px 14px;background:var(--accent);color:white;font-weight:650}button:hover{filter:brightness(1.08)}button:disabled{opacity:.5;cursor:wait}.secondary{background:#303341}.danger{background:#702d3b}.hidden{display:none!important}
+#setupNotice{margin:24px auto;max-width:720px;padding:22px;background:var(--panel);border:1px solid var(--line);border-radius:16px}
+#app{height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}aside{background:#15161d;border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.brand{padding:22px 18px 16px;font-size:21px;font-weight:850;letter-spacing:.2px}.brand span{color:var(--accent)}.me{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;margin-top:auto}.avatar{width:36px;height:36px;border-radius:50%;background:var(--accent2);display:grid;place-items:center;font-weight:800;flex-shrink:0;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover}.muted{color:var(--muted);font-size:12px}.side-section{padding:12px 10px 4px}.side-label{padding:6px 9px;color:var(--muted);font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase}.navbtn{display:flex;width:100%;align-items:center;gap:10px;text-align:left;background:transparent;color:#c9ccda;padding:10px;border-radius:8px;font-weight:600}.navbtn.active,.navbtn:hover{background:var(--panel2);color:white}.navbtn .dot{width:8px;height:8px;border-radius:50%;background:#47d69a}.userlist{overflow:auto;min-height:0;padding:0 10px}.userrow{display:flex;gap:9px;align-items:center;width:100%;background:transparent;color:var(--text);text-align:left;padding:9px;border-radius:8px}.userrow:hover{background:var(--panel2)}.userrow .usertext{min-width:0;flex:1}.userrow strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}.main{display:flex;flex-direction:column;min-width:0;min-height:0}.topbar{height:66px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 22px;gap:12px}.topbar h1{font-size:17px;margin:0}.topbar .sub{color:var(--muted);font-size:12px;margin-left:auto}.messages{flex:1;overflow:auto;padding:22px max(18px,calc((100% - 900px)/2));display:flex;flex-direction:column;gap:14px}.empty{margin:auto;text-align:center;color:var(--muted);max-width:400px}.msg{display:flex;gap:10px;align-items:flex-start}.msgbody{min-width:0;flex:1}.msghead{display:flex;gap:9px;align-items:baseline;flex-wrap:wrap}.msghead strong{font-size:14px}.time{font-size:11px;color:var(--muted)}.msgtext{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:3px}.composer{padding:14px 18px 18px;border-top:1px solid var(--line);background:var(--bg)}.compose-inner{max-width:900px;margin:auto;display:flex;gap:9px}.compose-inner input{flex:1;min-width:0}.field{background:#222530;border:1px solid #373a4a;color:var(--text);border-radius:9px;padding:12px;outline:none}.field:focus{border-color:var(--accent)}.compose-inner button{min-width:76px}.hint{max-width:900px;margin:7px auto 0;color:var(--muted);font-size:11px}.notice{margin:14px 18px 0;padding:10px 12px;border-radius:9px;background:#2b2539;color:#dcd6ff;font-size:12px}.error{color:#ff9aa7}.authwrap{min-height:100vh;display:grid;place-items:center;padding:20px}.authcard{width:min(430px,100%);padding:28px;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 70px #0005}.authcard h1{margin:0 0 5px;font-size:28px}.authcard p{color:var(--muted);margin:0 0 20px}.authcard label{display:block;margin:13px 0 6px;color:#c8cad6;font-size:13px}.authcard input{width:100%}.authcard button{width:100%;margin-top:12px}.authrow{display:flex;gap:8px}.authrow button{flex:1}.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px;margin:14px 0}.or:before,.or:after{content:"";height:1px;background:var(--line);flex:1}.authstatus{min-height:20px;margin-top:12px;font-size:13px}.mobile-head{display:none}
+@media(max-width:720px){#app{grid-template-columns:68px minmax(0,1fr)}.brand{font-size:0;padding:20px 12px}.brand:after{content:"N";font-size:24px;color:var(--accent)}.brand span{display:none}.side-label,.navbtn .navtext,.me .who,.userlist{display:none}.side-section{padding:10px 8px}.navbtn{justify-content:center;font-size:0}.navbtn .ico{font-size:18px}.me{padding:12px 15px;justify-content:center}.topbar{padding:0 14px}.topbar .sub{display:none}.messages{padding:16px 12px}.composer{padding:10px}.compose-inner button{min-width:60px;padding:10px}.hint{font-size:10px}}
+</style>
+</head>
+<body>
+<div id="setupNotice" class="hidden">
+<h2>NovaChat の設定が必要です</h2>
+<p><code>config.js</code> に Supabase の Project URL と anon key を入力してください。その後、このフォルダーをローカルWebサーバーまたはホスティング先から開いてください。</p>
+</div>
+<section id="authScreen" class="authwrap">
+ <div class="authcard">
+  <div class="brand" style="padding:0 0 12px">Nova<span>Chat</span></div>
+  <h1>会話をはじめよう。</h1><p>公開チャットでも、1対1でも。</p>
+  <label for="email">メールアドレス</label><input class="field" id="email" type="email" autocomplete="email" placeholder="you@example.com">
+  <label for="password">パスワード</label><input class="field" id="password" type="password" autocomplete="current-password" placeholder="6文字以上">
+  <div class="authrow"><button id="signInBtn">ログイン</button><button id="signUpBtn" class="secondary">新規登録</button></div>
+  <div class="or">または</div><button id="googleBtn" class="secondary">Googleで続ける</button>
+  <div id="authStatus" class="authstatus" role="status"></div>
+  <p class="muted" style="margin-top:14px">登録すると、公開チャットのルールとプライバシー方針に同意したものとします。個人情報やパスワードをチャットに投稿しないでください。</p>
+ </div>
+</section>
+<div id="app" class="hidden">
+ <aside>
+  <div class="brand">Nova<span>Chat</span></div>
+  <div class="side-section">
+   <div class="side-label">チャット</div>
+   <button id="publicNav" class="navbtn active"><span class="ico">#</span><span class="navtext">公開チャット</span></button>
+   <div class="side-label" style="margin-top:12px">オンラインユーザー</div>
+  </div>
+  <div id="userList" class="userlist"></div>
+  <div class="me">
+   <div id="myAvatar" class="avatar">?</div>
+   <div class="who" style="min-width:0;flex:1"><strong id="myName" style="display:block;overflow:hidden;text-overflow:ellipsis">ユーザー</strong><div class="muted">ログイン中</div></div>
+   <button id="signOutBtn" class="secondary" title="ログアウト" style="padding:8px">↪</button>
+  </div>
+ </aside>
+ <main class="main">
+  <header class="topbar"><h1 id="roomTitle"># 公開チャット</h1><div class="sub" id="roomSubtitle">誰でも参加できる会話</div></header>
+  <div id="banner" class="notice hidden"></div>
+  <div id="messages" class="messages"><div class="empty">メッセージを読み込んでいます…</div></div>
+  <form id="composer" class="composer">
+   <div class="compose-inner"><input id="messageInput" class="field" maxlength="2000" autocomplete="off" placeholder="# 公開チャットにメッセージを送信"><button id="sendBtn" type="submit">送信</button></div>
+   <div class="hint">Enterで送信 · 迷惑行為や個人情報の投稿は避けてください。</div>
+  </form>
+ </main>
+</div>
+<script src="./config.js"></script>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const cfg = window.NOVACHAT_CONFIG || {};
+const authScreen = document.querySelector('#authScreen'), app = document.querySelector('#app');
+const authStatus = document.querySelector('#authStatus'), banner = document.querySelector('#banner');
+const messagesEl = document.querySelector('#messages'), userListEl = document.querySelector('#userList');
+let supabase, currentUser = null, currentProfile = null, currentMode = 'public', activeDm = null, channel = null, userRefreshTimer = null;
+const $ = s => document.querySelector(s);
+function status(text, error=false){ authStatus.textContent=text; authStatus.className='authstatus'+(error?' error':''); }
+function notify(text){ banner.textContent=text; banner.classList.remove('hidden'); setTimeout(()=>banner.classList.add('hidden'),6500); }
+function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function initials(s='?'){return [...s.trim()].slice(0,1).join('').toUpperCase()||'?';}
+function avatarHtml(profile,size=''){const name=profile?.display_name||profile?.email||'?';return `<div class="avatar ${size}">${profile?.avatar_url?`<img src="${escapeHtml(profile.avatar_url)}" alt="">`:escapeHtml(initials(name))}</div>`;}
+function timeLabel(v){try{return new Date(v).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});}catch{return '';}}
+function showMessagesEmpty(t){messagesEl.innerHTML=`<div class="empty">${escapeHtml(t)}</div>`;}
+function renderMessages(rows){ if(!rows?.length){showMessagesEmpty('まだメッセージがありません。最初のメッセージを送ってみよう！');return;}
+ messagesEl.innerHTML=rows.map(m=>{const p=m.profiles||{};return `<article class="msg">${avatarHtml(p)}<div class="msgbody"><div class="msghead"><strong>${escapeHtml(p.display_name||p.email||'ユーザー')}</strong><span class="time">${timeLabel(m.created_at)}</span></div><div class="msgtext">${escapeHtml(m.body)}</div></div></article>`}).join('');messagesEl.scrollTop=messagesEl.scrollHeight;}
+async function fetchProfiles(ids){if(!ids?.length)return {};const {data,error}=await supabase.from('profiles').select('id,display_name,email,avatar_url').in('id',[...new Set(ids)]);if(error)throw error;return Object.fromEntries((data||[]).map(p=>[p.id,p]));}
+async function loadPublic(){currentMode='public';activeDm=null;$('#roomTitle').textContent='# 公開チャット';$('#roomSubtitle').textContent='誰でも参加できる会話';$('#messageInput').placeholder='# 公開チャットにメッセージを送信';$('#publicNav').classList.add('active');document.querySelectorAll('.userrow').forEach(x=>x.classList.remove('active'));showMessagesEmpty('メッセージを読み込んでいます…');await refreshChannel('public');const {data,error}=await supabase.from('public_messages').select('id,user_id,body,created_at').order('created_at',{ascending:true}).limit(150);if(error){showMessagesEmpty('公開チャットを読み込めませんでした。SQL設定とRLSポリシーを確認してください。');notify(error.message);return;}const profiles=await fetchProfiles(data.map(x=>x.user_id));renderMessages(data.map(x=>({...x,profiles:profiles[x.user_id]})));}
+async function loadDm(other){if(!other||other===currentUser.id)return;try{let {data:found,error:findErr}=await supabase.from('conversations').select('id,user1,user2').or(`and(user1.eq.${currentUser.id},user2.eq.${other}),and(user1.eq.${other},user2.eq.${currentUser.id})`).maybeSingle();if(findErr)throw findErr;
+ if(!found){const {data:newRow,error}=await supabase.from('conversations').insert({user1:currentUser.id,user2:other}).select('id,user1,user2').single();if(error){if(error.code==='23505'){const retry=await supabase.from('conversations').select('id,user1,user2').or(`and(user1.eq.${currentUser.id},user2.eq.${other}),and(user1.eq.${other},user2.eq.${currentUser.id})`).single();if(retry.error)throw retry.error;found=retry.data;}else throw error;}else found=newRow;}
+ activeDm={id:found.id,other};currentMode='dm';$('#roomTitle').textContent='↔ '+(userCache[other]?.display_name||userCache[other]?.email||'個別チャット');$('#roomSubtitle').textContent='あなたと相手だけに表示されます';$('#messageInput').placeholder='個別メッセージを送信';$('#publicNav').classList.remove('active');document.querySelectorAll('.userrow').forEach(x=>x.classList.toggle('active',x.dataset.id===other));showMessagesEmpty('メッセージを読み込んでいます…');await refreshChannel('dm:'+found.id);const {data,error}=await supabase.from('direct_messages').select('id,conversation_id,user_id,body,created_at').eq('conversation_id',found.id).order('created_at',{ascending:true}).limit(150);if(error)throw error;const ids=data.map(x=>x.user_id);const profiles=await fetchProfiles(ids);renderMessages(data.map(x=>({...x,profiles:profiles[x.user_id]})));
+ }catch(e){notify('個別チャットを開けません: '+e.message);showMessagesEmpty('個別チャットを開けませんでした。SQL設定とポリシーを確認してください。');}}
+let userCache={};
+async function refreshUsers(){try{const {data,error}=await supabase.from('profiles').select('id,display_name,email,avatar_url').neq('id',currentUser.id).order('display_name').limit(100);if(error)throw error;userCache=Object.fromEntries((data||[]).map(p=>[p.id,p]));userListEl.innerHTML=(data||[]).map(p=>`<button class="userrow ${activeDm?.other===p.id?'active':''}" data-id="${p.id}">${avatarHtml(p)}<span class="usertext"><strong>${escapeHtml(p.display_name||p.email||'ユーザー')}</strong><span class="muted">個別チャット</span></span></button>`).join('')||'<div class="muted" style="padding:12px">まだ他のユーザーがいません。</div>';userListEl.querySelectorAll('.userrow').forEach(btn=>btn.addEventListener('click',()=>loadDm(btn.dataset.id)));if(activeDm){const p=userCache[activeDm.other];if(p)$('#roomTitle').textContent='↔ '+(p.display_name||p.email||'個別チャット');}}catch(e){console.error(e);notify('ユーザー一覧を取得できません: '+e.message);}}
+async function refreshChannel(key){if(channel){await supabase.removeChannel(channel);channel=null;}if(key==='public'){channel=supabase.channel('public-message-feed').on('postgres_changes',{event:'INSERT',schema:'public',table:'public_messages'},async payload=>{if(currentMode!=='public')return;try{const p=await fetchProfiles([payload.new.user_id]);const existing=[...messagesEl.querySelectorAll('.msg')];if(existing.some(el=>el.dataset?.id===String(payload.new.id)))return;appendOne(payload.new,p[payload.new.user_id]);}catch(e){console.error(e);}}).subscribe();}
+ else{const id=key.slice(3);channel=supabase.channel('dm-feed-'+id).on('postgres_changes',{event:'INSERT',schema:'public',table:'direct_messages',filter:`conversation_id=eq.${id}`},async payload=>{if(currentMode!=='dm'||activeDm?.id!==id)return;try{const p=await fetchProfiles([payload.new.user_id]);appendOne(payload.new,p[payload.new.user_id]);}catch(e){console.error(e);}}).subscribe();}}
+function appendOne(m,p){if(messagesEl.querySelector(`[data-msg-id="${CSS.escape(String(m.id))}"]`))return;if(messagesEl.querySelector('.empty'))messagesEl.innerHTML='';const art=document.createElement('article');art.className='msg';art.dataset.msgId=String(m.id);art.innerHTML=`${avatarHtml(p)}<div class="msgbody"><div class="msghead"><strong>${escapeHtml(p?.display_name||p?.email||'ユーザー')}</strong><span class="time">${timeLabel(m.created_at)}</span></div><div class="msgtext">${escapeHtml(m.body)}</div></div>`;messagesEl.appendChild(art);messagesEl.scrollTop=messagesEl.scrollHeight;}
+async function sendMessage(body){if(!body.trim())return;const trimmed=body.trim();if(currentMode==='public'){const {error}=await supabase.from('public_messages').insert({user_id:currentUser.id,body:trimmed});if(error)throw error;}else if(activeDm){const {error}=await supabase.from('direct_messages').insert({conversation_id:activeDm.id,user_id:currentUser.id,body:trimmed});if(error)throw error;}}
+async function enterApp(user){currentUser=user;authScreen.classList.add('hidden');app.classList.remove('hidden');$('#myName').textContent=user.user_metadata?.full_name||user.user_metadata?.name||user.email||'ユーザー';$('#myAvatar').textContent=initials($('#myName').textContent);
+ const displayName=user.user_metadata?.full_name||user.user_metadata?.name||user.email?.split('@')[0]||'ユーザー';const avatar=user.user_metadata?.avatar_url||user.user_metadata?.picture||null;
+ const {error:profileError}=await supabase.from('profiles').upsert({id:user.id,email:user.email,display_name:displayName,avatar_url:avatar,updated_at:new Date().toISOString()},{onConflict:'id'});if(profileError)notify('プロフィール保存エラー: '+profileError.message);
+ const {data:me}=await supabase.from('profiles').select('id,display_name,email,avatar_url').eq('id',user.id).maybeSingle();currentProfile=me;$('#myName').textContent=me?.display_name||displayName;$('#myAvatar').innerHTML=me?.avatar_url?`<img src="${escapeHtml(me.avatar_url)}" alt="">`:escapeHtml(initials($('#myName').textContent));
+ await refreshUsers();await loadPublic();if(userRefreshTimer)clearInterval(userRefreshTimer);userRefreshTimer=setInterval(refreshUsers,30000);}
+$('#signInBtn').addEventListener('click',async()=>{const email=$('#email').value.trim(),password=$('#password').value;if(!email||!password)return status('メールアドレスとパスワードを入力してください。',true);status('ログイン中…');const {error}=await supabase.auth.signInWithPassword({email,password});if(error)status(error.message,true);});
+$('#signUpBtn').addEventListener('click',async()=>{const email=$('#email').value.trim(),password=$('#password').value;if(!email||!password)return status('メールアドレスとパスワードを入力してください。',true);if(password.length<6)return status('パスワードは6文字以上にしてください。',true);status('登録中…');const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});if(error)status(error.message,true);else if(!data.session)status('確認メールを送信しました。メール内のリンクを開いてからログインしてください。');});
+$('#googleBtn').addEventListener('click',async()=>{status('Googleログインへ移動します…');const {error}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.href}});if(error)status(error.message,true);});
+$('#signOutBtn').addEventListener('click',async()=>{await supabase.auth.signOut();if(channel)await supabase.removeChannel(channel);currentUser=null;app.classList.add('hidden');authScreen.classList.remove('hidden');status('ログアウトしました。');});
+$('#publicNav').addEventListener('click',loadPublic);
+$('#composer').addEventListener('submit',async e=>{e.preventDefault();const input=$('#messageInput');const body=input.value;if(!body.trim())return;$('#sendBtn').disabled=true;try{await sendMessage(body);input.value='';}catch(err){notify('送信できませんでした: '+err.message);}finally{$('#sendBtn').disabled=false;input.focus();}});
+async function start(){if(!cfg.url||!cfg.anonKey||cfg.url.includes('YOUR_')||cfg.anonKey.includes('YOUR_')){authScreen.classList.add('hidden');$('#setupNotice').classList.remove('hidden');return;}
+ supabase=createClient(cfg.url,cfg.anonKey);const {data:{session}}=await supabase.auth.getSession();if(session?.user)await enterApp(session.user);supabase.auth.onAuthStateChange(async(event,session)=>{if(session?.user&&!currentUser){setTimeout(()=>enterApp(session.user),0);}else if(!session?.user&&currentUser){currentUser=null;app.classList.add('hidden');authScreen.classList.remove('hidden');}});}
+start().catch(e=>status('起動エラー: '+e.message,true));
+</script>
+</body>
+</html>
